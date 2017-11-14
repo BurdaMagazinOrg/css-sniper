@@ -31,4 +31,4 @@ function fileRenderer(file) {
 //console.log(process.env.PWD);
 
 //resolveSevenDirectory();
-fileRenderer(path.resolve(__dirname, 'sass/base/elements.scss'))
+fileRenderer(path.resolve(process.cwd(), 'sass/base/elements.scss'))
