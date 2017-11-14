@@ -5,6 +5,12 @@ const sass = require('node-sass');
 // const glob = require('glob');
 const sevenImporter = require('./importer').sevenImporter;
 
+const program = require('commander');
+
+program
+  .version(require('./package.json').version)
+  .parse(process.argv)
+
 function fileRenderer(file) {
   'use strict';
 
