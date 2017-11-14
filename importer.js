@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const fs = require('fs');
 const csstree = require('css-tree');
 
@@ -20,7 +18,7 @@ function sevenImporter() {
     return { file: url };
   };
 
-};
+}
 
 function parseImportString(string) {
   let [file, definitionString] = string.split(' remove ').map(val => val.trim());
@@ -100,4 +98,4 @@ function parseFile(file, definitions){
 
 module.exports = {
   sevenImporter
-}
+};
