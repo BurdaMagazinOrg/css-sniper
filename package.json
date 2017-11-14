@@ -1,0 +1,26 @@
+{
+  "name": "css-sniper",
+  "version": "1.0.0",
+  "description": "A node module and sass compiler, which lets you remove styles and selectors, while importing external CSS files.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BurdaMagazinOrg/css-sniper.git"
+  },
+  "bin": {
+    "css-sniper": "index.js"
+  },
+  "author": "",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/BurdaMagazinOrg/css-sniper/issues"
+  },
+  "homepage": "https://github.com/BurdaMagazinOrg/css-sniper#readme",
+  "dependencies": {
+    "css-tree": "^1.0.0-alpha.26",
+    "node-sass": "^4.6.1"
+  }
+}
