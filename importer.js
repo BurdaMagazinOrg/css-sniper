@@ -1,15 +1,16 @@
 const fs = require('fs');
 const csstree = require('css-tree');
+const config = {};
 
-function resolveSevenDirectory() {
-  return '../../../core/themes/seven';
+function getOrigin() {
+  return config.origin;
 }
 
-function sevenImporter() {
+function sniperImporter() {
   return function(url, prev, done) {
-    if (url.startsWith('@seven')) {
+    if (url.startsWith('@origin')) {
       const [ definitions, fileUrl] = parseImportString(url);
-      const file = fileUrl.replace('@seven', resolveSevenDirectory());
+      const file = fileUrl.replace('@origin', getOrigin());
       let contents = parseFile(file, definitions);
       console.log(contents);
       return { contents: contents};
@@ -45,7 +46,8 @@ function parseImportString(string) {
 
 
 /**
- * Usage: @import "@seven/css/base/elements.css remove { body, .thunder-details, .apple: [color] }";
+ * Usage: @import "@seven/css/base/elements.css remove { body,
+ * .thunder-details, .apple: [color] }";
  *
  */
 function parseFile(file, definitions){
@@ -97,5 +99,6 @@ function parseFile(file, definitions){
 }
 
 module.exports = {
-  sevenImporter
+  sniperImporter,
+  sniperConfigure : origin => { config.origin = origin }
 };
