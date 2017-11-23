@@ -17,7 +17,7 @@ program
 
 program.origin = program.origin || execSync('drush eval "echo DRUPAL_ROOT . \'/\'. drupal_get_path(\'theme\', \'seven\');"');
 
-program.includePath = program.includePath || ['sass-includes'];
+program.includePath = program.includePath.length ? program.includePath : ['sass-includes'];
 let includePaths = program.includePath.map(include => path.resolve(process.cwd()+'/'+include));
 let file = program.args[0] || 'sass/base/elements.scss';
 
