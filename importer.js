@@ -62,39 +62,64 @@ function parseFile(file, definitions){
     }
   });
 
-  csstree.walkUp(ast, function(node, item, list) {
-    if (node.type === 'Rule') {
-      let prelude = node.prelude;
-      prelude.children.each(function(selector, item, list) {
+  csstree.walkRulesRight(ast, function(rule, item, list) {
 
-        let remove = false;
-        csstree.walk(selector, function(node) {
-          // ignore nodes in nested selectors
-          if (this.selector === null || this.selector === prelude) {
-            let name = csstree.translate(item.data);
-            let definition = definitions.find(function(def) { return def.selector === name; });
-            if (definition) {
-              if (definition.declarations.length) {
-                // do something;
-              } else {
-                remove = true;
-              }
-            }
-          }
-        });
-
-        if (remove) {
+    if (rule.type !== 'Rule') {
+      return;
+    }
+    let remove = {};
+    rule.prelude.children.each(function (node, item, list) {
+      let name = csstree.translate(item.data);
+      let definition = definitions.find(function (def) {
+        return def.selector === name;
+      });
+      if (definition) {
+        if (definition.declarations.length) {
+          remove.selector = list.remove(item);
+          remove.declarations = definition.declarations;
+        }
+        else {
           list.remove(item);
+        }
+      }
+    });
+
+    // Handle removal of declarations by creating a new rule.
+    if (remove.selector) {
+      let block = new csstree.List()
+      rule.block.children.each(function(node, item, list) {
+        if (node.type === 'Declaration') {
+          if (!remove.declarations.includes(node.property)) {
+            block.insertData(node);
+          }
         }
       });
 
-      if (node.prelude.children.isEmpty() ||
-        node.block.children.isEmpty()) {
-        list.remove(item);
+      if(!block.isEmpty()) {
+        let newRule = {
+          type: 'Rule',
+          loc: null,    // not required, but better keep the shape of nodes
+          prelude: {
+            loc: null,
+            type: 'SelectorList',
+            children: new csstree.List().append(remove.selector)
+          },
+          block: {
+            type: 'Block',
+            loc: null,
+            children: block
+          }
+        };
+        list.insertData(newRule, item.next);
       }
+    }
 
+    if (rule.prelude.children.isEmpty() ||
+      rule.block.children.isEmpty()) {
+      list.remove(item);
     }
   });
+
   return csstree.translate(ast);
 }
 
