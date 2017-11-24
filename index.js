@@ -15,7 +15,7 @@ program
   .option('--include-path <value>', 'Paths to look for imported files ', val => val.split(','), [])
   .option('--origin [value]', 'Path to origin theme css files', execSync('drush eval "echo DRUPAL_ROOT . \'/\'. drupal_get_path(\'theme\', \'seven\');"'))
   .option('-o, --output [value]', 'Output directory')
-  .option('--output-style [value]', 'Available output formats: nested, expanded, compact, compressed', 'nested' )
+  .option('--output-style [value]', 'Available output formats: nested, expanded, compact, compressed', 'compressed' )
   .parse(process.argv)
 
 if (!program.args.length) program.help();
@@ -23,12 +23,6 @@ if (!program.args.length) program.help();
 program.includePath = program.includePath.length ? program.includePath : ['sass-includes'];
 let includePaths = program.includePath.map(include => path.resolve(process.cwd()+'/'+include));
 let files = program.args[0];
-
-// Configure importer.
-sniperConfigure(program.origin);
-
-// Render files.
-run(files);
 
 /**
  * Render File
@@ -111,3 +105,9 @@ function run(files) {
     renderFile(path.resolve(files));
   }
 }
+
+// Configure importer.
+sniperConfigure(program.origin);
+
+// Render files.
+run(files);
