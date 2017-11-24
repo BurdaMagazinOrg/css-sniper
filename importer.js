@@ -12,7 +12,6 @@ function sniperImporter() {
       const [ definitions, fileUrl] = parseImportString(url);
       const file = fileUrl.replace('@origin', getOrigin());
       let contents = parseFile(file, definitions);
-      console.log(contents);
       return { contents: contents};
     }
 
@@ -26,10 +25,10 @@ function sniperImporter() {
  *
  * Syntax: @import "@seven/css/base/elements.css remove { body,
  * .thunder-details, .apple { color } }";
- * 
+ *
  */
 function parseImportString(string) {
-  let [file, definitionString] = string.split(' remove ').map(val => val.trim());
+  let [file, definitionString] = string.replace(/\n/g, " " ).split(' remove ').map(val => val.trim());
   let selectorMatches = definitionString.match(/{([\s\S]+)}/);
 
   if (selectorMatches) {
