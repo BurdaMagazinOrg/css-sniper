@@ -11,8 +11,10 @@ function sniperImporter() {
       if (!baseUrl || baseUrl === fileBase) return new Error('Couldn\'t resolve path');
 
       const file = `${baseUrl}/${fileUrl}`;
+
+      if (definitions.length === 0) return { file };
+
       let contents = parseFile(file, definitions);
-      // TODO: return just the url, when no remove present
       return { contents: contents };
     }
     return { file: url };
