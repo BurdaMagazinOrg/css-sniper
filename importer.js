@@ -7,16 +7,14 @@ function getOrigin() {
 }
 
 function sniperImporter() {
-  return function (url, prev, done) {
+  return function(url, prev, done) {
     if (url.startsWith('@origin')) {
       const [definitions, fileUrl] = parseImportString(url);
       const file = fileUrl.replace('@origin', getOrigin());
-      if (definitions) {
-        let contents = parseFile(file, definitions);
-        return {contents: contents};
-      }
+      let contents = parseFile(file, definitions);
+      return { contents: contents };
     }
-    return {file: url};
+    return { file: url };
   };
 
 }
@@ -54,7 +52,7 @@ function parseImportString(string) {
     }
   }
 
-  return [ null, file];
+  return [ [], file];
 }
 
 
