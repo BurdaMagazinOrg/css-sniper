@@ -12,7 +12,7 @@ function sniperImporter() {
 
       const file = `${baseUrl}/${fileUrl}`;
 
-      if (definitions.length === 0) return { file };
+      if (definitions.length === 0) return { file: file.substring(0, file.indexOf('.css')) };
 
       let contents = parseFile(file, definitions);
       return { contents: contents };
