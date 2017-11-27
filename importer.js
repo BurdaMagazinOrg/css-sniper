@@ -27,7 +27,7 @@ function sniperImporter() {
  *
  */
 function parseImportString(string) {
-  let [file, definitionString] = string.replace(/\n/g, ' ').split(' remove ').map(val => val.trim());
+  let [file, definitionString] = string.replace(/\n/g, ' ' ).split(' remove ').map(val => val.trim());
 
   if (definitionString) {
     let selectorMatches = definitionString.match(/{([\s\S]+)}/);

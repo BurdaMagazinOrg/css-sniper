@@ -46,11 +46,9 @@ function renderFile(file) {
       let dest = path.resolve(
         path.join(program.output,
           path.relative(
-            path.resolve(files), file
-          )
+            path.resolve(files), file)
         )
       ).replace(path.extname(file), '.css');
-
       // Create destination dir.
       mkdirp(path.dirname(dest), function (err) {
         if (err) {
@@ -76,9 +74,9 @@ function renderFile(file) {
  * @api private
  */
 function isDirectory(filePath) {
-  var isDir = false;
+  let isDir = false;
   try {
-    var absolutePath = path.resolve(filePath);
+    const absolutePath = path.resolve(filePath);
     isDir = fs.statSync(absolutePath).isDirectory();
   } catch (e) {
     isDir = e.code === 'ENOENT';
