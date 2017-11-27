@@ -27,7 +27,7 @@ function sniperImporter() {
  *
  */
 function parseImportString(string) {
-  let [file, definitionString] = string.replace(/\n/g, " " ).split(' remove ').map(val => val.trim());
+  let [file, definitionString] = string.replace(/\n/g, ' ').split(' remove ').map(val => val.trim());
 
   if (definitionString) {
     let selectorMatches = definitionString.match(/{([\s\S]+)}/);
@@ -102,7 +102,7 @@ function parseFile(file, definitions){
 
     // Handle removal of declarations by creating a new rule.
     if (reduce.selector) {
-      let block = new csstree.List()
+      let block = new csstree.List();
       // Copy declarations which are not removed.
       rule.block.children.each(function(node, item, list) {
         if (node.type === 'Declaration') {
@@ -143,5 +143,5 @@ function parseFile(file, definitions){
 
 module.exports = {
   sniperImporter,
-  sniperConfigure : origin => { config.origin = origin }
+  sniperConfigure : origin => { config.origin = origin; }
 };

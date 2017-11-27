@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const glob = require('glob')
+const glob = require('glob');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const sass = require('node-sass');
@@ -16,7 +16,7 @@ program
   .option('--origin [value]', 'Path to origin theme css files', execSync('drush eval "echo DRUPAL_ROOT . \'/\'. drupal_get_path(\'theme\', \'seven\');"'))
   .option('-o, --output [value]', 'Output directory')
   .option('--output-style [value]', 'Available output formats: nested, expanded, compact, compressed', 'compressed' )
-  .parse(process.argv)
+  .parse(process.argv);
 
 if (!program.args.length) program.help();
 
@@ -46,9 +46,11 @@ function renderFile(file) {
       let dest = path.resolve(
         path.join(program.output,
           path.relative(
-            path.resolve(files), file)
+            path.resolve(files), file
           )
-        ).replace(path.extname(file), '.css');
+        )
+      ).replace(path.extname(file), '.css');
+
       // Create destination dir.
       mkdirp(path.dirname(dest), function (err) {
         if (err) {
