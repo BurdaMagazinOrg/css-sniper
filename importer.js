@@ -1,6 +1,6 @@
 const fs = require('fs');
 const csstree = require('css-tree');
-const config = require('./css-sniper.conf')
+const config = require('./css-sniper.conf');
 
 function sniperImporter() {
   return function(url, prev, done) {
@@ -8,7 +8,7 @@ function sniperImporter() {
       const [definitions, fileBase, fileUrl] = parseImportString(url);
 
       const baseUrl = getCachedOrigin(fileBase);
-      if (!baseUrl || baseUrl === fileBase) return new Error('Couldn\'t resolve path')
+      if (!baseUrl || baseUrl === fileBase) return new Error('Couldn\'t resolve path');
 
       const file = `${baseUrl}/${fileUrl}`;
       let contents = parseFile(file, definitions);

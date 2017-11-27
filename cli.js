@@ -1,5 +1,4 @@
 const program = require('commander');
-const { execSync } = require('child_process');
 
 program
   .version(require('./package.json').version)

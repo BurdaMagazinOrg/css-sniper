@@ -6,7 +6,7 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 const sass = require('node-sass');
 const { sniperImporter, sniperConfigure } = require('./importer');
-const program = require('./cli')
+const program = require('./cli');
 
 let includePaths = program.includePath.map(include => path.resolve(process.cwd()+'/'+include));
 let files = program.args[0];

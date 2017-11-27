@@ -1,8 +1,8 @@
-const path = require('path')
-const fs = require('fs')
-const program = require('./cli')
+const path = require('path');
+const fs = require('fs');
+const program = require('./cli');
 
-let overwrites = {}
+let overwrites = {};
 
 if (program.config) {
   overwrites = require(path.join(process.cwd(), program.config));
