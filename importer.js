@@ -7,15 +7,16 @@ function getOrigin() {
 }
 
 function sniperImporter() {
-  return function(url, prev, done) {
+  return function (url, prev, done) {
     if (url.startsWith('@origin')) {
-      const [ definitions, fileUrl] = parseImportString(url);
+      const [definitions, fileUrl] = parseImportString(url);
       const file = fileUrl.replace('@origin', getOrigin());
-      let contents = parseFile(file, definitions);
-      return { contents: contents};
+      if (definitions) {
+        let contents = parseFile(file, definitions);
+        return {contents: contents};
+      }
     }
-
-    return { file: url };
+    return {file: url};
   };
 
 }
@@ -29,25 +30,28 @@ function sniperImporter() {
  */
 function parseImportString(string) {
   let [file, definitionString] = string.replace(/\n/g, " " ).split(' remove ').map(val => val.trim());
-  let selectorMatches = definitionString.match(/{([\s\S]+)}/);
 
-  if (selectorMatches) {
-    let definition = selectorMatches[1].split(/,(?![^{]*})/).map(function (string) {
+  if (definitionString) {
+    let selectorMatches = definitionString.match(/{([\s\S]+)}/);
 
-      let [selector, declarations] = string.split(/[{}]/);
-      selector = selector.trim();
+    if (selectorMatches) {
+      let definition = selectorMatches[1].split(/,(?![^{]*})/).map(function (string) {
 
-      if (declarations) {
-        declarations = declarations.split(',').map(val => val.trim());
-      }
-      else {
-        declarations = [];
-      }
+        let [selector, declarations] = string.split(/[{}]/);
+        selector = selector.trim();
 
-      return { selector: selector, declarations: declarations };
-    });
+        if (declarations) {
+          declarations = declarations.split(',').map(val => val.trim());
+        }
+        else {
+          declarations = [];
+        }
 
-    return [ definition, file ];
+        return { selector: selector, declarations: declarations };
+      });
+
+      return [ definition, file ];
+    }
   }
 
   return [ null, file];
