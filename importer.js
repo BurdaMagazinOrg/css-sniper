@@ -51,26 +51,29 @@ function parseImportString(string) {
     let selectorMatches = definitionString.match(/{([\s\S]+)}/);
 
     if (selectorMatches) {
-      let definition = selectorMatches[1].split(/,(?![^{]*})/).map(function (string) {
-
-        let [selector, declarations] = string.split(/[{}]/);
-        selector = selector.trim();
-
-        if (declarations) {
-          declarations = declarations.split(',').map(val => val.trim());
-        }
-        else {
-          declarations = [];
-        }
-
-        return { selector: selector, declarations: declarations };
-      });
+      let definition = selectorMatches[1].split(/,(?![^{]*})/).map(
+        getSelectorAndDeclarations
+      );
 
       return [ definition, fileBase, filePath ];
     }
   }
 
   return [ [], fileBase, filePath];
+}
+
+function getSelectorAndDeclarations(string) {
+  let [selector, declarations] = string.split(/[{}]/);
+  selector = selector.trim();
+
+  if (declarations) {
+    declarations = declarations.split(',').map(val => val.trim());
+  }
+  else {
+    declarations = [];
+  }
+
+  return { selector: selector, declarations: declarations };
 }
 
 
@@ -120,34 +123,7 @@ function parseFile(file, definitions){
 
     // Handle removal of declarations by creating a new rule.
     if (reduce.selector) {
-      let block = new csstree.List();
-      // Copy declarations which are not removed.
-      rule.block.children.each(function(node, item, list) {
-        if (node.type === 'Declaration') {
-          if (!reduce.declarations.includes(node.property)) {
-            block.insertData(node);
-          }
-        }
-      });
-
-      if(!block.isEmpty()) {
-        // Build a new rule for inserting.
-        let newRule = {
-          type: 'Rule',
-          loc: null,
-          prelude: {
-            loc: null,
-            type: 'SelectorList',
-            children: new csstree.List().append(reduce.selector)
-          },
-          block: {
-            type: 'Block',
-            loc: null,
-            children: block
-          }
-        };
-        list.insertData(newRule, item.next);
-      }
+      removeDeclarations(rule, item, list, reduce);
     }
     // Remove rule if there is no selector or declaration.
     if (rule.prelude.children.isEmpty() ||
@@ -157,6 +133,37 @@ function parseFile(file, definitions){
   });
 
   return csstree.translate(ast);
+}
+
+function removeDeclarations(rule, item, list, reduce) {
+  let block = new csstree.List();
+  // Copy declarations which are not removed.
+  rule.block.children.each(function(node, item, list) {
+    if (node.type === 'Declaration') {
+      if (!reduce.declarations.includes(node.property)) {
+        block.insertData(node);
+      }
+    }
+  });
+
+  if(!block.isEmpty()) {
+    // Build a new rule for inserting.
+    let newRule = {
+      type: 'Rule',
+      loc: null,
+      prelude: {
+        loc: null,
+        type: 'SelectorList',
+        children: new csstree.List().append(reduce.selector)
+      },
+      block: {
+        type: 'Block',
+        loc: null,
+        children: block
+      }
+    };
+    list.insertData(newRule, item.next);
+  }
 }
 
 module.exports = {
