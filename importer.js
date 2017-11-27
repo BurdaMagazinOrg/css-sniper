@@ -161,5 +161,4 @@ function parseFile(file, definitions){
 
 module.exports = {
   sniperImporter,
-  sniperConfigure : origin => { config.origin = origin; }
 };

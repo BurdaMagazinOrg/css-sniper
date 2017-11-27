@@ -5,7 +5,7 @@ const glob = require('glob');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const sass = require('node-sass');
-const { sniperImporter, sniperConfigure } = require('./importer');
+const { sniperImporter } = require('./importer');
 const program = require('./cli');
 
 let includePaths = program.includePath.map(include => path.resolve(process.cwd()+'/'+include));
@@ -89,9 +89,6 @@ function run(files) {
     renderFile(path.resolve(files));
   }
 }
-
-// Configure importer.
-sniperConfigure(program.origin);
 
 // Render files.
 run(files);
