@@ -1,22 +1,37 @@
 const fs = require('fs');
 const csstree = require('css-tree');
-const config = {};
-
-function getOrigin() {
-  return config.origin;
-}
+const config = require('./css-sniper.conf')
 
 function sniperImporter() {
   return function(url, prev, done) {
-    if (url.startsWith('@origin')) {
-      const [definitions, fileUrl] = parseImportString(url);
-      const file = fileUrl.replace('@origin', getOrigin());
+    if (url.startsWith('@')) {
+      const [definitions, fileBase, fileUrl] = parseImportString(url);
+
+      const baseUrl = getCachedOrigin(fileBase);
+      if (!baseUrl || baseUrl === fileBase) return new Error('Couldn\'t resolve path')
+
+      const file = `${baseUrl}/${fileUrl}`;
       let contents = parseFile(file, definitions);
+      // TODO: return just the url, when no remove present
       return { contents: contents };
     }
     return { file: url };
   };
 
+}
+
+function getCachedOrigin(base) {
+  getCachedOrigin.cache = getCachedOrigin.cache || [];
+
+  if (getCachedOrigin.cache[base]) return getCachedOrigin.cache[base];
+
+  const origin = getOrigin(base);
+  getCachedOrigin.cache[base] = origin;
+  return origin;
+}
+
+function getOrigin(base) {
+  return config.resolver(base);
 }
 
 /**
@@ -28,6 +43,7 @@ function sniperImporter() {
  */
 function parseImportString(string) {
   let [file, definitionString] = string.replace(/\n/g, ' ' ).split(' remove ').map(val => val.trim());
+  const [, fileBase, filePath] = file.split(/@(.+?)\//);
 
   if (definitionString) {
     let selectorMatches = definitionString.match(/{([\s\S]+)}/);
@@ -48,11 +64,11 @@ function parseImportString(string) {
         return { selector: selector, declarations: declarations };
       });
 
-      return [ definition, file ];
+      return [ definition, fileBase, filePath ];
     }
   }
 
-  return [ [], file];
+  return [ [], fileBase, filePath];
 }
 
 
