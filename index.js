@@ -15,7 +15,7 @@ program
   .option('--include-path <value>', 'Paths to look for imported files ', val => val.split(','), [])
   .option('--origin [value]', 'Path to origin theme css files', execSync('drush eval "echo DRUPAL_ROOT . \'/\'. drupal_get_path(\'theme\', \'seven\');"'))
   .option('-o, --output [value]', 'Output directory')
-  .option('--output-style [value]', 'Available output formats: nested, expanded, compact, compressed', 'compressed' )
+  .option('--output-style [value]', 'Available output formats: nested, expanded, compact, compressed', 'uncompressed' )
   .parse(process.argv);
 
 if (!program.args.length) program.help();
