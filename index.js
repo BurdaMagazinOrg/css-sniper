@@ -40,10 +40,7 @@ function renderFile(file) {
     importer: sniperImporter(),
   }, function (err, result) {
     if (err) {
-      console.log(err.status); // used to be "code" in v2x and below
-      console.log(err.column);
-      console.log(err.message);
-      console.log(err.line);
+      console.log(err.formatted);
     } else {
       // Build path to destination file.
       let dest = path.resolve(
@@ -55,11 +52,11 @@ function renderFile(file) {
       // Create destination dir.
       mkdirp(path.dirname(dest), function (err) {
         if (err) {
-          return console.log(err);
+          return console.log(err.formatted);
         }
         fs.writeFile(dest, result.css.toString(), function (err) {
           if (err) {
-            return console.log(err);
+            return console.log(err.formatted);
           }
           console.log(dest+' written.');
         });
