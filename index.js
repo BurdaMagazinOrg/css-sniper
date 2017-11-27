@@ -5,22 +5,9 @@ const glob = require('glob');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const sass = require('node-sass');
-const { execSync } = require('child_process');
 const { sniperImporter, sniperConfigure } = require('./importer');
-const program = require('commander');
+const program = require('./cli')
 
-program
-  .version(require('./package.json').version)
-  .usage('[options] <files ...>')
-  .option('--include-path <value>', 'Paths to look for imported files ', val => val.split(','), [])
-  .option('--origin [value]', 'Path to origin theme css files', execSync('drush eval "echo DRUPAL_ROOT . \'/\'. drupal_get_path(\'theme\', \'seven\');"'))
-  .option('-o, --output [value]', 'Output directory')
-  .option('--output-style [value]', 'Available output formats: nested, expanded, compact, compressed', 'uncompressed' )
-  .parse(process.argv);
-
-if (!program.args.length) program.help();
-
-program.includePath = program.includePath.length ? program.includePath : ['sass-includes'];
 let includePaths = program.includePath.map(include => path.resolve(process.cwd()+'/'+include));
 let files = program.args[0];
 
