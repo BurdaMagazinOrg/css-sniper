@@ -51,7 +51,7 @@ function parseImportString(string) {
     let selectorMatches = definitionString.match(/{([\s\S]+)}/);
 
     if (selectorMatches) {
-      let definition = selectorMatches[1].split(/,(?![^{]*})/).map(
+      let definition = selectorMatches[1].match(/.+?}/g).map(
         getSelectorAndDeclarations
       );
 
