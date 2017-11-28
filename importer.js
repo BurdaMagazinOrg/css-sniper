@@ -99,35 +99,23 @@ function parseFile(file, definitions){
       return;
     }
 
-    let reduce = {};
-    // Iterate selectors in rule prelude.
-    rule.prelude.children.each(function (node, item, list) {
-
-      // Render selector from ast for comparison.
-      let name = csstree.translate(item.data);
-      let definition = definitions.find(function (def) {
-        return def.selector === name;
-      });
-
-      if (definition) {
-        if (definition.declarations.length) {
-          // Remove the selector from the rule, a new rule is created below.
-          reduce.selector = list.remove(item);
-          reduce.declarations = definition.declarations;
-        }
-        else {
-          list.remove(item);
-        }
-      }
+    // Render selector from ast for comparison.
+    let selector = csstree.translate(rule.prelude)
+    let definition = definitions.find(function (def) {
+      return def.selector === selector;
     });
 
-    // Handle removal of declarations by creating a new rule.
-    if (reduce.selector) {
-      removeDeclarations(rule, item, list, reduce);
+    if (definition) {
+      if (definition.declarations.length) {
+        removeDeclarations(rule, item, list, definition.declarations);
+      }
+      else {
+        list.remove(item);
+      }
     }
-    // Remove rule if there is no selector or declaration.
-    if (rule.prelude.children.isEmpty() ||
-      rule.block.children.isEmpty()) {
+
+    // Remove rule if there is no declaration.
+    if (rule.block.children.isEmpty()) {
       list.remove(item);
     }
   });
@@ -135,35 +123,14 @@ function parseFile(file, definitions){
   return csstree.translate(ast);
 }
 
-function removeDeclarations(rule, item, list, reduce) {
-  let block = new csstree.List();
-  // Copy declarations which are not removed.
+function removeDeclarations(rule, item, list, declarations) {
   rule.block.children.each(function(node, item, list) {
     if (node.type === 'Declaration') {
-      if (!reduce.declarations.includes(node.property)) {
-        block.insertData(node);
+      if (declarations.includes(node.property)) {
+        list.remove(item);
       }
     }
   });
-
-  if(!block.isEmpty()) {
-    // Build a new rule for inserting.
-    let newRule = {
-      type: 'Rule',
-      loc: null,
-      prelude: {
-        loc: null,
-        type: 'SelectorList',
-        children: new csstree.List().append(reduce.selector)
-      },
-      block: {
-        type: 'Block',
-        loc: null,
-        children: block
-      }
-    };
-    list.insertData(newRule, item.next);
-  }
 }
 
 module.exports = {
