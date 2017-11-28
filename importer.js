@@ -64,7 +64,7 @@ function parseImportString(string) {
 
 function getSelectorAndDeclarations(string) {
   let [selector, declarations] = string.split(/[{}]/);
-  selector = selector.trim();
+  selector = csstree.translate(csstree.parse(selector, { context: 'selectorList' }));
 
   if (declarations) {
     declarations = declarations.split(',').map(val => val.trim());
