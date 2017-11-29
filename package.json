@@ -1,6 +1,6 @@
 {
   "name": "css-sniper",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A node module and sass compiler, which lets you remove styles and selectors, while importing external CSS files.",
   "main": "index.js",
   "scripts": {
