@@ -12,8 +12,8 @@ else if (process.cwd() !== __dirname && fs.existsSync(path.join(process.cwd(), '
 }
 
 module.exports = {
-  resolver: function(path) {
-    return path;
+  resolver: function(base) {
+    return path.join(process.cwd(), base);
   }
 };
 
