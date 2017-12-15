@@ -1,0 +1,11 @@
+.foo {
+  color: blue; }
+
+.bar, a:hover {
+  color: red; }
+
+@media screen and (max-width: 600px) {
+  .foo {
+    color: green; }
+  .bar {
+    color: red; } }
