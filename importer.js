@@ -40,7 +40,7 @@ function getOrigin(base) {
  * Parse an import string.
  *
  * Syntax: @import "@seven/css/base/elements.css remove { body,
- * .thunder-details, .apple { color } }";
+ * .thunder-details, .apple { color; font-size } }";
  *
  */
 function parseImportString(string) {
@@ -51,9 +51,8 @@ function parseImportString(string) {
     let selectorMatches = definitionString.match(/{([\s\S]+)}/);
 
     if (selectorMatches) {
-      let definition = selectorMatches[1].match(/.+?}/g).map(
-        getSelectorAndDeclarations
-      );
+      // Parse import string into ast.
+      let definition = csstree.parse(selectorMatches[1]);
 
       return [ definition, fileBase, filePath ];
     }
@@ -62,25 +61,11 @@ function parseImportString(string) {
   return [ [], fileBase, filePath];
 }
 
-function getSelectorAndDeclarations(string) {
-  let [selector, declarations] = string.split(/[{}]/);
-  selector = csstree.translate(csstree.parse(selector, { context: 'selectorList' }));
-
-  if (declarations) {
-    declarations = declarations.split(',').map(val => val.trim());
-  }
-  else {
-    declarations = [];
-  }
-
-  return { selector: selector, declarations: declarations };
-}
-
 
 /**
  *
  */
-function parseFile(file, definitions){
+function parseFile(file, definition){
   let contents = fs.readFileSync(file, 'utf-8');
 
   // Parse css into ast, see https://astexplorer.net
@@ -92,22 +77,58 @@ function parseFile(file, definitions){
     }
   });
 
-  // Use walkRulesRight: added rules are not parsed.
-  csstree.walkRulesRight(ast, function(rule, item, list) {
+  removeSelectors(ast, definition);
+  return csstree.translate(ast);
+}
+
+function removeSelectors(ast, definition) {
+
+  csstree.walkRules(ast, function (rule, item, list) {
     // Ignore all other types.
     if (rule.type !== 'Rule') {
       return;
     }
 
     // Render selector from ast for comparison.
-    let selector = csstree.translate(rule.prelude)
-    let definition = definitions.find(function (def) {
-      return def.selector === selector;
+    let selector = csstree.translate(rule.prelude);
+    let atRule = this.atrule;
+    let remove = {};
+
+    csstree.walkRules(definition, function (defRule, defItem, defList) {
+      let defSelector = csstree.translate(defRule.prelude);
+      let defAtRule = this.atrule;
+      let proceed = false;
+
+      if (selector === defSelector) {
+        // Definition selector is inside @-rule
+        if (defAtRule) {
+          // Check if css rule is also in @-rule and compare type. e.g. @media
+          if (atRule && atRule.name === defAtRule.name) {
+            // Compare selector, e.g. screen and width()
+            let prelude = csstree.translate(atRule.prelude);
+            let defPrelude = csstree.translate(defAtRule.prelude);
+            if (prelude === defPrelude) {
+              proceed = true;
+            }
+          }
+        }
+        else {
+          // no @-rule
+          proceed = true;
+        }
+      }
+
+      if (proceed) {
+        remove = {
+          selector: selector,
+          declarations: defRule.block.children
+        };
+      }
     });
 
-    if (definition) {
-      if (definition.declarations.length) {
-        removeDeclarations(rule, item, list, definition.declarations);
+    if (remove.selector) {
+      if (remove.declarations.getSize()) {
+        removeDeclarations(rule, item, list, remove.declarations);
       }
       else {
         list.remove(item);
@@ -119,16 +140,18 @@ function parseFile(file, definitions){
       list.remove(item);
     }
   });
-
-  return csstree.translate(ast);
 }
 
+
 function removeDeclarations(rule, item, list, declarations) {
+  // Traverse csstree Lists
   rule.block.children.each(function(node, item, list) {
     if (node.type === 'Declaration') {
-      if (declarations.includes(node.property)) {
-        list.remove(item);
-      }
+      declarations.each(function(currentNode) {
+        if (node.property === currentNode.value.replace(/;/g , '')) {
+          list.remove(item);
+        }
+      });
     }
   });
 }
