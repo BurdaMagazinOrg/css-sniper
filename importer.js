@@ -84,6 +84,18 @@ function parseFile(file, definition){
 function removeSelectors(ast, definition) {
 
   csstree.walkRules(ast, function (rule, item, list) {
+
+    if (rule.type === 'Atrule') {
+      let atRule = rule;
+      csstree.walkRules(definition, function (defRule) {
+        if (checkAtruleIsSame(atRule, defRule)) {
+          if (defRule.block.children.getSize() === 0) {
+            list.remove(item);
+          }
+        }
+      });
+    }
+
     // Ignore all other types.
     if (rule.type !== 'Rule') {
       return;
@@ -94,35 +106,16 @@ function removeSelectors(ast, definition) {
     let atRule = this.atrule;
     let remove = {};
 
-    csstree.walkRules(definition, function (defRule, defItem, defList) {
+    csstree.walkRules(definition, function (defRule) {
       let defSelector = csstree.translate(defRule.prelude);
-      let defAtRule = this.atrule;
-      let proceed = false;
 
       if (selector === defSelector) {
-        // Definition selector is inside @-rule
-        if (defAtRule) {
-          // Check if css rule is also in @-rule and compare type. e.g. @media
-          if (atRule && atRule.name === defAtRule.name) {
-            // Compare selector, e.g. screen and width()
-            let prelude = csstree.translate(atRule.prelude);
-            let defPrelude = csstree.translate(defAtRule.prelude);
-            if (prelude === defPrelude) {
-              proceed = true;
-            }
-          }
+        if (checkAtruleIsSame(atRule, this.atrule)) {
+          remove = {
+            selector: selector,
+            declarations: defRule.block.children
+          };
         }
-        else {
-          // no @-rule
-          proceed = true;
-        }
-      }
-
-      if (proceed) {
-        remove = {
-          selector: selector,
-          declarations: defRule.block.children
-        };
       }
     });
 
@@ -154,6 +147,22 @@ function removeDeclarations(rule, item, list, declarations) {
       });
     }
   });
+}
+
+function checkAtruleIsSame(atRule, defAtRule) {
+  if (!atRule && !defAtRule) {
+    // no @-rule
+    return true;
+    // Check if css rule is also in @-rule and compare type. e.g. @media
+  } else if (atRule && defAtRule && atRule.name === defAtRule.name) {
+    let prelude = csstree.translate(atRule.prelude);
+    let defPrelude = csstree.translate(defAtRule.prelude);
+    // Compare selector, e.g. screen and width()
+    if (prelude === defPrelude) {
+      return true;
+    }
+  }
+  return false;
 }
 
 module.exports = {
