@@ -1,0 +1,35 @@
+
+.foo {
+  color: blue;
+}
+
+.bar {
+  font-size: 20px;
+}
+
+.bar,
+a:hover {
+  color: red;
+}
+
+@media screen and (max-width: 600px) {
+
+  .foo {
+    color: green;
+    font-size: 10px;
+  }
+
+  .bar {
+    color: red;
+  }
+
+  a {
+   color: yellow;
+  }
+}
+
+@-moz-document url-prefix() {
+  .bar {
+    color: black;
+  }
+}
