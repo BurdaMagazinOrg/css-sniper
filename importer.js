@@ -85,11 +85,14 @@ function removeSelectors(ast, definition) {
 
   csstree.walkRules(ast, function (rule, item, list) {
 
+    // Handle removal of @-rules.
     if (rule.type === 'Atrule') {
       let atRule = rule;
       csstree.walkRules(definition, function (defRule) {
-        if (checkAtruleIsSame(atRule, defRule)) {
-          if (defRule.block.children.getSize() === 0) {
+
+        // Remove the whole rule when there are no selectors.
+        if (defRule.block.children.getSize() === 0) {
+          if (checkAtruleIsSame(atRule, defRule)) {
             list.remove(item);
           }
         }
@@ -104,37 +107,30 @@ function removeSelectors(ast, definition) {
     // Render selector from ast for comparison.
     let selector = csstree.translate(rule.prelude);
     let atRule = this.atrule;
-    let remove = {};
 
     csstree.walkRules(definition, function (defRule) {
       let defSelector = csstree.translate(defRule.prelude);
 
       if (selector === defSelector) {
         if (checkAtruleIsSame(atRule, this.atrule)) {
-          remove = {
-            selector: selector,
-            declarations: defRule.block.children
-          };
+
+          // Remove declarations or the whole rule.
+          if (defRule.block.children.getSize()) {
+            removeDeclarations(rule, item, list, defRule.block.children);
+          }
+          else {
+            list.remove(item);
+          }
         }
       }
     });
 
-    if (remove.selector) {
-      if (remove.declarations.getSize()) {
-        removeDeclarations(rule, item, list, remove.declarations);
-      }
-      else {
-        list.remove(item);
-      }
-    }
-
-    // Remove rule if there is no declaration.
+    // Remove rule if there are no declarations.
     if (rule.block.children.isEmpty()) {
       list.remove(item);
     }
   });
 }
-
 
 function removeDeclarations(rule, item, list, declarations) {
   // Traverse csstree Lists
