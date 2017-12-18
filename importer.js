@@ -106,8 +106,10 @@ function removeSelectors(ast, definition) {
 
     // Render selector from ast for comparison.
     let selector = csstree.translate(rule.prelude);
+    // this.atrule corresponds to the stylesheet context.
     let atRule = this.atrule;
 
+    // Context changes to the definition tree here.
     csstree.walkRules(definition, function (defRule) {
       let defSelector = csstree.translate(defRule.prelude);
 
