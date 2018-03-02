@@ -78,18 +78,20 @@ function parseFile(file, definition){
   });
 
   removeSelectors(ast, definition);
-  return csstree.translate(ast);
+  return csstree.generate(ast);
 }
 
 function removeSelectors(ast, definition) {
 
-  csstree.walkRules(ast, function (rule, item, list) {
+  csstree.walk(ast, function (rule, item, list) {
 
     // Handle removal of @-rules.
     if (rule.type === 'Atrule') {
       let atRule = rule;
-      csstree.walkRules(definition, function (defRule) {
-
+      csstree.walk(definition, function (defRule) {
+        if ( defRule.type !== 'Atrule' && defRule.type !== 'Rule') {
+          return;
+        }
         // Remove the whole rule when there are no selectors.
         if (defRule.block.children.getSize() === 0) {
           if (checkAtruleIsSame(atRule, defRule)) {
@@ -105,13 +107,16 @@ function removeSelectors(ast, definition) {
     }
 
     // Render selector from ast for comparison.
-    let selector = csstree.translate(rule.prelude);
+    let selector = csstree.generate(rule.prelude);
     // this.atrule corresponds to the stylesheet context.
     let atRule = this.atrule;
 
     // Context changes to the definition tree here.
-    csstree.walkRules(definition, function (defRule) {
-      let defSelector = csstree.translate(defRule.prelude);
+    csstree.walk(definition, function (defRule) {
+      if ( defRule.type !== 'Atrule' && defRule.type !== 'Rule') {
+        return;
+      }ls
+      let defSelector = csstree.generate(defRule.prelude);
 
       if (selector === defSelector) {
         if (checkAtruleIsSame(atRule, this.atrule)) {
@@ -134,12 +139,12 @@ function removeSelectors(ast, definition) {
   });
 }
 
-function removeDeclarations(rule, item, list, declarations) {
+function removeDeclarations(rule, ruleitem, rulelist, declarations) {
   // Traverse csstree Lists
   rule.block.children.each(function(node, item, list) {
     if (node.type === 'Declaration') {
       declarations.each(function(currentNode) {
-        if (node.property === currentNode.value.replace(/;/g , '')) {
+        if (node.property === currentNode.value) {
           list.remove(item);
         }
       });
@@ -153,8 +158,8 @@ function checkAtruleIsSame(atRule, defAtRule) {
     return true;
     // Check if css rule is also in @-rule and compare type. e.g. @media
   } else if (atRule && defAtRule && atRule.name === defAtRule.name) {
-    let prelude = csstree.translate(atRule.prelude);
-    let defPrelude = csstree.translate(defAtRule.prelude);
+    let prelude = csstree.generate(atRule.prelude);
+    let defPrelude = csstree.generate(defAtRule.prelude);
     // Compare selector, e.g. screen and width()
     if (prelude === defPrelude) {
       return true;
