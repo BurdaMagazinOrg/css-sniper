@@ -9,6 +9,10 @@ branches:
 cache:
   directories:
     - "node_modules"
+
+before_script:
+  - npm install
+
 script:
   - css-sniper -o test/rendered.css test/include.scss
   - git diff --exit-code
