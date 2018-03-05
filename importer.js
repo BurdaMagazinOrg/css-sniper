@@ -140,6 +140,7 @@ function removeSelectors(ast, definition) {
 }
 
 function removeDeclarations(rule, ruleitem, rulelist, declarations) {
+  let warn = false;
   // Traverse csstree Lists
   rule.block.children.each(function(node, item, list) {
     if (node.type === 'Declaration') {
@@ -152,13 +153,14 @@ function removeDeclarations(rule, ruleitem, rulelist, declarations) {
           currentNode.value.split(',').forEach(function (value) {
             if (node.property === value.trim()) {
               list.remove(item);
-              console.log('WARNING: Use of commas in remove definition is deprecated and will be removed, use semi-colon instead');
+              warn = true;
             }
           });
         }
       });
     }
   });
+  if (warn) console.log('WARNING: Use of commas in remove definition is deprecated and will be removed, use semi-colon instead.');
 }
 
 function checkAtruleIsSame(atRule, defAtRule) {
