@@ -1,4 +1,5 @@
 @import "@test/original.css remove {
+  .abc { color, font-size }
   @-moz-document url-prefix() {} 
   @media screen and (max-width: 600px) { .foo { font-size } a {} }
   .bar {}

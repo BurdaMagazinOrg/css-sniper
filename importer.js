@@ -147,6 +147,14 @@ function removeDeclarations(rule, ruleitem, rulelist, declarations) {
         if (node.property === currentNode.value) {
           list.remove(item);
         }
+        else if (currentNode.type === 'Raw') {
+          // Handle comma separated declarations.
+          currentNode.value.split(',').forEach(function (value) {
+            if (node.property === value.trim()) {
+              list.remove(item);
+            }
+          });
+        }
       });
     }
   });
