@@ -5,6 +5,13 @@
   font-weight: bold;
 }
 
+.def {
+  color: #333;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+
 .foo {
   color: blue;
 }
