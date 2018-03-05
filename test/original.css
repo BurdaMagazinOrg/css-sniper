@@ -1,3 +1,9 @@
+.abc {
+  color: #333;
+  color: #eee;
+  font-size: 12px;
+  font-weight: bold;
+}
 
 .foo {
   color: blue;
