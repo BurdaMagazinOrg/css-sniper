@@ -144,7 +144,7 @@ function removeDeclarations(rule, ruleitem, rulelist, declarations) {
   rule.block.children.each(function(node, item, list) {
     if (node.type === 'Declaration') {
       declarations.each(function(currentNode) {
-        if (node.property === currentNode.value) {
+        if (node.property === currentNode.value.replace(/;/g , '')) {
           list.remove(item);
         }
         else if (currentNode.type === 'Raw') {
@@ -152,6 +152,7 @@ function removeDeclarations(rule, ruleitem, rulelist, declarations) {
           currentNode.value.split(',').forEach(function (value) {
             if (node.property === value.trim()) {
               list.remove(item);
+              console.log('WARNING: Use of commas in remove definition is deprecated and will be removed, use semi-colon instead');
             }
           });
         }
