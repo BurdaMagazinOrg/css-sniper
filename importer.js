@@ -115,7 +115,7 @@ function removeSelectors(ast, definition) {
     csstree.walk(definition, function (defRule) {
       if ( defRule.type !== 'Atrule' && defRule.type !== 'Rule') {
         return;
-      }ls
+      }
       let defSelector = csstree.generate(defRule.prelude);
 
       if (selector === defSelector) {
