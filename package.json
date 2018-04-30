@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/BurdaMagazinOrg/css-sniper#readme",
   "dependencies": {
-    "commander": "^2.14.1",
+    "commander": "^2.15.1",
     "css-tree": "^1.0.0-alpha.28",
-    "node-sass": "^4.7.2"
+    "node-sass": "^4.9.0"
   }
 }
