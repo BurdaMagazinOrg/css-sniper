@@ -12,4 +12,4 @@ cache:
 
 script:
   - ./index.js -o test/rendered.css test/include.scss
-  - git diff --exit-code
+  - git diff test/ --exit-code
