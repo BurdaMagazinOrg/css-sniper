@@ -11,10 +11,18 @@ function sniperImporter() {
       if (!baseUrl || baseUrl === fileBase) return new Error('Couldn\'t resolve path');
 
       const file = `${baseUrl}/${fileUrl}`;
+      let contents;
 
-      if (definitions.length === 0) return { file: file.substring(0, file.indexOf('.css')) };
+      if (definitions.length === 0) {
+        // Importing .css files has been deprecated in libsass:
+        // https://github.com/sass/libsass/pull/2613
+        // (rationale in https://github.com/sass/libsass/issues/2611)
+        contents = fs.readFileSync(file, 'utf-8');
+      }
+      else {
+        contents = parseFile(file, definitions);
+      }
 
-      let contents = parseFile(file, definitions);
       return { contents: contents };
     }
     return { file: url };
