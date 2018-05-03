@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "node"
+  - "8"
 
 branches:
   only:
@@ -12,4 +12,4 @@ cache:
 
 script:
   - ./index.js -o test/rendered.css test/include.scss
-  - git diff --exit-code
+  - git diff --exit-code test/

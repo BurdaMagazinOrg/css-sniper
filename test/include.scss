@@ -5,3 +5,5 @@
   @media screen and (max-width: 600px) { .foo { font-size } a {} }
   .bar {}
 }";
+
+@import "@test/plain.css";
