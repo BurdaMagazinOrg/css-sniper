@@ -22,6 +22,6 @@
   "dependencies": {
     "commander": "^2.20.0",
     "css-tree": "^1.0.0-alpha.34",
-    "node-sass": "^4.13.1"
+    "node-sass": "^4.14.1"
   }
 }
