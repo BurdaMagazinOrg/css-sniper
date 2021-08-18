@@ -10,7 +10,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: eslint . --ext .js,.jsx,.ts,.tsx
+      - name: eslint
+        uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-check
 
   test:
     needs: lint
