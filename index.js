@@ -37,16 +37,14 @@ function renderFile(file) {
         )
       ).replace(path.extname(file), '.css');
       // Create destination dir.
-      mkdirp(path.dirname(dest), function (err) {
-        if (err) {
-          return console.log(err.formatted);
-        }
+      mkdirp(path.dirname(dest)).then((made) => {
         fs.writeFile(dest, result.css.toString(), function (err) {
           if (err) {
-            return console.log(err.formatted);
+            return console.log(err);
           }
           console.log(dest+' written.');
-        });
+        })
+
       });
     }
   });
