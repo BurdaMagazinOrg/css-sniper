@@ -5,10 +5,17 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  lint:
     runs-on: ubuntu-latest
 
+    steps:
+      - uses: actions/checkout@v2
+      - run: eslint . --ext .js,.jsx,.ts,.tsx
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    
     strategy:
       matrix:
         node-version: [14.x, 16.x]
@@ -20,6 +27,5 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: eslint . --ext .js,.jsx,.ts,.tsx
       - run: npm run build --if-present
       - run: npm test
